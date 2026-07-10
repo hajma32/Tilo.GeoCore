@@ -14,4 +14,20 @@ interface VectorLayer : Layer {
      * Source of vector features for this layer.
      */
     val source: FeatureSource
+
+    /**
+     * Rendering strategy chosen by the layer.
+     */
+    val renderStrategy: VectorRenderStrategy
+        get() = VectorRenderStrategy.Immediate
+}
+
+sealed interface VectorRenderStrategy {
+    data object Immediate : VectorRenderStrategy
+
+    data class CachedBitmap(
+        val scale: Double = 1.0,
+        val paddingPx: Int = 128,
+        val invalidateOnZoomDelta: Double = 0.35,
+    ) : VectorRenderStrategy
 }

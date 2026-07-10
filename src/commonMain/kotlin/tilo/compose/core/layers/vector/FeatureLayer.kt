@@ -12,12 +12,14 @@ import tilo.compose.core.projection.Projection
  * @param projection Source CRS of the provided features, or null if features are already in the
  *   map CRS.
  * @param features Features to display.
+ * @param renderStrategy Rendering strategy preferred by this layer.
  */
 class FeatureLayer(
     override val id: String,
     override val zIndex: Int = 0,
     override val projection: Projection? = null,
-    features: List<Feature>
+    features: List<Feature>,
+    override val renderStrategy: VectorRenderStrategy = VectorRenderStrategy.Immediate,
 ) : VectorLayer {
     override val source = FeatureListSource(features, projection)
 }

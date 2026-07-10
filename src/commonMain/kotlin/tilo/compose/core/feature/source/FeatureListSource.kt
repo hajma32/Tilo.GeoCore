@@ -17,6 +17,8 @@ class FeatureListSource(
     private val projection: Projection? = null,
     maxEntries: Int = 9
 ) : FeatureSource {
+    override val version: Long = features.hashCode().toLong()
+
     private val index = RBush<Feature>(maxEntries = maxEntries) { feature ->
         feature.geometry.bounds().let { bounds ->
             SpatialRect(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY)
