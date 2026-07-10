@@ -16,7 +16,7 @@ data class Data(val payload: Any?)
 data class Feature(
     val geometry: Geometry,
     val key: String,
-    val style: BaseStyle? = null,
+    val style: GeometryStyle? = null,
     val label: String? = null,
     val callout: Callout? = null,
     val data: Data? = null
