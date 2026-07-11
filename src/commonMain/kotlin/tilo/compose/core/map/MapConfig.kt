@@ -1,6 +1,8 @@
 package tilo.compose.core.map
 
 import tilo.compose.core.projection.Projection
+import tilo.compose.core.scale.DistanceCalculator
+import tilo.compose.core.scale.DistanceCalculators
 import tilo.compose.core.transform.CrsTransformer
 import tilo.compose.core.transform.Transformation
 import tilo.compose.core.transform.TransformationRegistry
@@ -12,7 +14,8 @@ data class MapConfig(
     val minZoom: Double = 0.0,
     val maxZoom: Double = 22.0,
     val wrapHorizontal: Boolean = true,
-    val transformationRegistry: TransformationRegistry = TransformationRegistry.Default
+    val transformationRegistry: TransformationRegistry = TransformationRegistry.Default,
+    val distanceCalculator: DistanceCalculator = DistanceCalculators.Auto,
 ) {
     val transformer: CrsTransformer
         get() = CrsTransformer(transformationRegistry)
