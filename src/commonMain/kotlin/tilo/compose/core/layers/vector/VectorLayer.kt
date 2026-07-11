@@ -1,5 +1,6 @@
 package tilo.compose.core.layers.vector
 
+import tilo.compose.core.feature.FeatureLayerStyle
 import tilo.compose.core.feature.source.FeatureSource
 import tilo.compose.core.layers.Layer
 
@@ -20,6 +21,13 @@ interface VectorLayer : Layer {
      */
     val renderStrategy: VectorRenderStrategy
         get() = VectorRenderStrategy.Immediate
+
+    /**
+     * Layer-level style used as the default for point, line, polygon, label,
+     * and selected feature rendering.
+     */
+    val style: FeatureLayerStyle
+        get() = FeatureLayerStyle()
 }
 
 sealed interface VectorRenderStrategy {

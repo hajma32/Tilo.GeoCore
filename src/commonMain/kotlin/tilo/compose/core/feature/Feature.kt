@@ -17,6 +17,7 @@ data class Feature(
     val geometry: Geometry,
     val key: String,
     val style: GeometryStyle? = null,
+    val selectedStyle: GeometryStyle? = null,
     val label: String? = null,
     val callout: Callout? = null,
     val data: Data? = null

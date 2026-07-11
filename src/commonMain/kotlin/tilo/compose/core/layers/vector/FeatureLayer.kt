@@ -1,6 +1,7 @@
 package tilo.compose.core.layers.vector
 
 import tilo.compose.core.feature.Feature
+import tilo.compose.core.feature.FeatureLayerStyle
 import tilo.compose.core.feature.source.FeatureListSource
 import tilo.compose.core.projection.Projection
 
@@ -20,6 +21,7 @@ class FeatureLayer(
     override val projection: Projection? = null,
     features: List<Feature>,
     override val renderStrategy: VectorRenderStrategy = VectorRenderStrategy.Immediate,
+    override val style: FeatureLayerStyle = FeatureLayerStyle(),
 ) : VectorLayer {
     override val source = FeatureListSource(features, projection)
 }

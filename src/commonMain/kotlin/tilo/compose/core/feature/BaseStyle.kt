@@ -89,6 +89,21 @@ data class PolygonStyle(
     val stroke: StrokeStyle? = StrokeStyle(color = ColorValue.Blue, width = 1.5),
 ) : GeometryStyle
 
+data class LabelStyle(
+    val color: ColorValue = ColorValue.Black,
+)
+
+data class FeatureLayerStyle(
+    val point: PointStyle? = null,
+    val line: LineStyle? = null,
+    val polygon: PolygonStyle? = null,
+    val label: LabelStyle? = null,
+    val selectedPoint: PointStyle? = null,
+    val selectedLine: LineStyle? = null,
+    val selectedPolygon: PolygonStyle? = null,
+    val selectedLabel: LabelStyle? = null,
+)
+
 data class BaseStyle(
     val strokeColor: Long? = null,
     val fillColor: Long? = null,
