@@ -32,7 +32,8 @@ data class FeatureHitTestFeature(
 )
 
 class FeatureHitTester(
-    private val tolerancePx: Double = DEFAULT_TOLERANCE_PX,
+    private val toleranceDip: Double = DEFAULT_TOLERANCE_DIP,
+    private val styleScale: Double = 1.0,
 ) {
     fun hitTest(
         layers: List<FeatureHitTestLayer>,
@@ -95,23 +96,31 @@ class FeatureHitTester(
     private fun Feature.pointTolerance(layerStyle: FeatureLayerStyle): Double {
         val style = style ?: layerStyle.geometryStyleFor(geometry)
         val visualRadius = when (style) {
-            is PointStyle -> style.size / 2.0 + (style.stroke?.width ?: 0.0)
-            is BaseStyle -> (style.strokeWidth ?: 0.0) / 2.0
+            is PointStyle -> (style.size / 2.0 + (style.stroke?.width ?: 0.0)).toScreenPixels()
+            is BaseStyle -> ((style.strokeWidth ?: 0.0) / 2.0).toScreenPixels()
             else -> 0.0
         }
-        return max(tolerancePx, visualRadius + TOUCH_PADDING_PX)
+        return max(toleranceDip.toScreenPixels(), visualRadius + TOUCH_PADDING_DIP.toScreenPixels())
     }
 
     private fun Feature.lineTolerance(layerStyle: FeatureLayerStyle): Double {
         val style = style ?: layerStyle.geometryStyleFor(geometry)
         val strokeWidth = when (style) {
-            is LineStyle -> style.stroke.width
-            is PolygonStyle -> style.stroke?.width ?: 0.0
-            is BaseStyle -> style.strokeWidth ?: 0.0
+            is LineStyle -> max(
+                style.stroke.width.toScreenPixels(),
+                (style.casing?.width ?: 0.0).toScreenPixels(),
+            )
+            is PolygonStyle -> max(
+                (style.stroke?.width ?: 0.0).toScreenPixels(),
+                (style.casing?.width ?: 0.0).toScreenPixels(),
+            )
+            is BaseStyle -> (style.strokeWidth ?: 0.0).toScreenPixels()
             else -> 0.0
         }
-        return max(tolerancePx, strokeWidth / 2.0 + TOUCH_PADDING_PX)
+        return max(toleranceDip.toScreenPixels(), strokeWidth / 2.0 + TOUCH_PADDING_DIP.toScreenPixels())
     }
+
+    private fun Double.toScreenPixels(): Double = this * styleScale
 
     private fun FeatureLayerStyle.geometryStyleFor(geometry: Geometry): GeometryStyle? =
         when (geometry) {
@@ -121,7 +130,7 @@ class FeatureHitTester(
         }
 
     private companion object {
-        const val DEFAULT_TOLERANCE_PX = 48.0
-        const val TOUCH_PADDING_PX = 16.0
+        const val DEFAULT_TOLERANCE_DIP = 48.0
+        const val TOUCH_PADDING_DIP = 16.0
     }
 }

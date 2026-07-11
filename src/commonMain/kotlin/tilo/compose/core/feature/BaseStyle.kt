@@ -4,6 +4,10 @@ import kotlin.jvm.JvmInline
 
 sealed interface GeometryStyle
 
+/*
+ * Numeric style dimensions are logical display units (DIP/DP), not physical
+ * pixels. Platform renderers convert them to device pixels using their density.
+ */
 @JvmInline
 value class ColorValue(val argb: ULong) {
     companion object {
@@ -74,23 +78,71 @@ data class PointIcon(
 
 data class PointStyle(
     val shape: PointShape = PointShape.Circle,
-    val size: Double = 10.0,
+    val size: Double = 14.0,
     val fill: FillStyle? = FillStyle(color = ColorValue.Blue),
-    val stroke: StrokeStyle? = StrokeStyle(color = ColorValue.White, width = 2.0),
+    val stroke: StrokeStyle? = StrokeStyle(color = ColorValue.White, width = 2.5),
     val icon: PointIcon? = null,
 ) : GeometryStyle
 
 data class LineStyle(
-    val stroke: StrokeStyle = StrokeStyle(color = ColorValue.Blue, width = 2.0),
+    val casing: StrokeStyle? = StrokeStyle(
+        color = ColorValue.White,
+        width = 6.0,
+        lineCap = LineCap.Round,
+        lineJoin = LineJoin.Round,
+    ),
+    val stroke: StrokeStyle = StrokeStyle(
+        color = ColorValue.Blue,
+        width = 3.0,
+        lineCap = LineCap.Round,
+        lineJoin = LineJoin.Round,
+    ),
 ) : GeometryStyle
 
 data class PolygonStyle(
     val fill: FillStyle? = FillStyle(color = ColorValue(0x331E88E5u)),
-    val stroke: StrokeStyle? = StrokeStyle(color = ColorValue.Blue, width = 1.5),
+    val casing: StrokeStyle? = StrokeStyle(
+        color = ColorValue.White,
+        width = 5.0,
+        lineJoin = LineJoin.Round,
+    ),
+    val stroke: StrokeStyle? = StrokeStyle(
+        color = ColorValue.Blue,
+        width = 2.0,
+        lineJoin = LineJoin.Round,
+    ),
 ) : GeometryStyle
+
+enum class LabelFontWeight {
+    Normal,
+    Medium,
+    SemiBold,
+    Bold,
+}
+
+enum class LabelFontStyle {
+    Normal,
+    Italic,
+}
+
+data class LabelBackgroundStyle(
+    val color: ColorValue,
+    val opacity: Double = 1.0,
+    val cornerRadius: Double = 4.0,
+    val paddingHorizontal: Double = 5.0,
+    val paddingVertical: Double = 2.0,
+)
 
 data class LabelStyle(
     val color: ColorValue = ColorValue.Black,
+    val fontSize: Double = 12.0,
+    val fontWeight: LabelFontWeight = LabelFontWeight.Bold,
+    val fontStyle: LabelFontStyle = LabelFontStyle.Normal,
+    val haloColor: ColorValue = ColorValue.White,
+    val haloWidth: Double = 3.0,
+    val background: LabelBackgroundStyle? = null,
+    val bitmapPadding: Double = 2.0,
+    val offsetY: Double = 12.0,
 )
 
 data class FeatureLayerStyle(
