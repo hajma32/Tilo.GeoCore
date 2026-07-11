@@ -2,6 +2,11 @@ package tilo.compose.core.layers
 
 import tilo.compose.core.projection.Projection
 
+data class Attribution(
+    val label: String,
+    val url: String? = null,
+)
+
 /**
  * Represents a map layer responsible for rendering and updating map elements.
  *
@@ -26,4 +31,10 @@ interface Layer {
      * */
     val projection: Projection?
         get() = null
+
+    /**
+     * Attribution required by the layer's data source or provider.
+     */
+    val attributions: List<Attribution>
+        get() = emptyList()
 }
