@@ -1,5 +1,7 @@
 package tilo.compose.core.feature
 
+import kotlin.jvm.JvmInline
+
 sealed interface GeometryStyle
 
 @JvmInline
