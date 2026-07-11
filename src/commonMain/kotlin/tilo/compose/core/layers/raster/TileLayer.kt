@@ -33,6 +33,22 @@ interface TileLayer : Layer {
     suspend fun loadTiles(map: Map): List<Tile>
 
     /**
+     * Returns a coarse, quickly loadable tile coverage for the current [map].
+     *
+     * Renderers can use these tiles as a temporary overview while the sharper
+     * visible tile set is still loading, for example after a fast fling.
+     */
+    suspend fun loadOverviewTiles(map: Map): List<Tile> = emptyList()
+
+    /**
+     * Prefetches coarse nearby tiles for the current [map] state.
+     *
+     * This is useful during kinetic panning: a renderer can keep a low-detail
+     * overview warm around the moving viewport without waiting for sharp tiles.
+     */
+    suspend fun prefetchOverviewTiles(map: Map) = Unit
+
+    /**
      * Prefetches nearby tiles for the current [map] state without changing the
      * rendered result. Implementations may no-op when prefetching is unsupported.
      */
