@@ -18,10 +18,19 @@ import tilo.compose.core.projection.Projection
 class FeatureLayer(
     override val id: String,
     override val zIndex: Int = 0,
+    override val visible: Boolean = true,
+    override val minZoom: Double? = null,
+    override val maxZoom: Double? = null,
     override val projection: Projection? = null,
     features: List<Feature>,
     override val renderStrategy: VectorRenderStrategy = VectorRenderStrategy.Immediate,
     override val style: FeatureLayerStyle = FeatureLayerStyle(),
 ) : VectorLayer {
+    init {
+        require(minZoom == null || maxZoom == null || minZoom <= maxZoom) {
+            "minZoom must not be greater than maxZoom"
+        }
+    }
+
     override val source = FeatureListSource(features, projection)
 }

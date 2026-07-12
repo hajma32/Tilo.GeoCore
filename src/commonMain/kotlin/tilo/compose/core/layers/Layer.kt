@@ -26,6 +26,23 @@ interface Layer {
     val zIndex: Int
         get() = 0
 
+    /**
+     * Whether this layer participates in rendering and interaction.
+     *
+     * A hidden layer is not fetched, rendered, hit-tested, or included in the
+     * active attribution list.
+     */
+    val visible: Boolean
+        get() = true
+
+    /** Inclusive lower zoom limit for this layer, or `null` for no limit. */
+    val minZoom: Double?
+        get() = null
+
+    /** Inclusive upper zoom limit for this layer, or `null` for no limit. */
+    val maxZoom: Double?
+        get() = null
+
     /** Source CRS of data provided by this layer (for example `EPSG:4326`, `EPSG:5514`).
      *  If null, the layer is expected to provide data in the same coordinate system as the viewport (for example `EPSG:3857` for WebMercator).
      * */
@@ -37,4 +54,13 @@ interface Layer {
      */
     val attributions: List<Attribution>
         get() = emptyList()
+
+    /** Returns whether this layer is active at [zoom]. */
+    fun isVisibleAt(zoom: Double): Boolean {
+        val minimum = minZoom
+        val maximum = maxZoom
+        return visible &&
+            (minimum == null || zoom >= minimum) &&
+            (maximum == null || zoom <= maximum)
+    }
 }
