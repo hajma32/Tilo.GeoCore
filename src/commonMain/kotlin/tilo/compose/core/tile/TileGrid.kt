@@ -2,6 +2,7 @@ package tilo.compose.core.tile
 
 import kotlin.math.log2
 import kotlin.math.roundToInt
+import kotlin.math.ceil
 import tilo.compose.core.geometry.Point
 import tilo.compose.core.map.Viewport
 import tilo.compose.core.projection.Epsg3857Projection
@@ -70,8 +71,11 @@ data class TileGrid(
     /**
      * Builds a prioritized request plan for the current viewport.
      *
-     * If [preferredZoom] would produce too many visible tiles, the zoom is
-     * lowered until the visible request count is at or below [maxVisibleTiles].
+     * If [preferredZoom] would nominally produce too many visible tiles, the
+     * zoom is lowered until the viewport-size estimate is at or below
+     * [maxVisibleTiles]. The actual request count may be slightly higher when
+     * the viewport crosses tile boundaries; keeping zoom stable during pan is
+     * preferred over dropping to a coarser tile level.
      * Prefetch requests are computed at the same zoom and exclude visible tiles.
      */
     fun requestPlan(
@@ -82,12 +86,11 @@ data class TileGrid(
         prefetchMargin: Int = 1,
     ): TileRequestPlan {
         var zoom = preferredZoom
-        var visibleRange = tileRange(minX, maxX, minY, maxY, zoom)
-        while (visibleRange.count > maxVisibleTiles && zoom > 0) {
+        while (estimatedTileCount(minX, maxX, minY, maxY, zoom) > maxVisibleTiles && zoom > 0) {
             zoom -= 1
-            visibleRange = tileRange(minX, maxX, minY, maxY, zoom)
         }
 
+        val visibleRange = tileRange(minX, maxX, minY, maxY, zoom)
         val visible = tileRequests(visibleRange, zoom)
         val visibleCoordinates = visible.mapTo(mutableSetOf()) { it.coordinate }
         val prefetch = if (prefetchMargin > 0) {
@@ -123,6 +126,19 @@ data class TileGrid(
         )
     }
 
+    private fun estimatedTileCount(
+        minX: Double,
+        maxX: Double,
+        minY: Double,
+        maxY: Double,
+        zoom: Int,
+    ): Int {
+        val span = tileSpan(zoom)
+        val columns = ceil((maxX - minX) / span).toInt().coerceAtLeast(1)
+        val rows = ceil((maxY - minY) / span).toInt().coerceAtLeast(1)
+        return columns * rows
+    }
+
     private fun tileRequests(range: TileRange, zoom: Int): List<TileRequest> =
         buildList {
             for (y in range.y0..range.y1) {
@@ -133,8 +149,6 @@ data class TileGrid(
         }
 
     private data class TileRange(val x0: Int, val x1: Int, val y0: Int, val y1: Int) {
-        val count: Int = (x1 - x0 + 1) * (y1 - y0 + 1)
-
         fun expanded(margin: Int, nx: Int, ny: Int): TileRange =
             TileRange(
                 x0 = (x0 - margin).coerceAtLeast(0),

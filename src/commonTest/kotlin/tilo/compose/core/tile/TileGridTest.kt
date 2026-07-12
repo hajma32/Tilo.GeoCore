@@ -27,7 +27,7 @@ class TileGridTest {
     }
 
     @Test
-    fun requestPlanLimitsVisibleTilesAndKeepsPrefetchSeparate() {
+    fun requestPlanLimitsNominalVisibleTilesAndKeepsPrefetchSeparate() {
         val plan =
             TileGrid().requestPlan(
                 minX = -90.0,
@@ -40,9 +40,46 @@ class TileGridTest {
             )
         val visibleCoordinates = plan.visible.mapTo(mutableSetOf()) { it.coordinate }
 
-        assertTrue(plan.visible.size <= 9)
+        assertEquals(1, plan.zoom)
         assertTrue(plan.prefetch.isNotEmpty())
         assertTrue(plan.prefetch.none { it.coordinate in visibleCoordinates })
+    }
+
+    @Test
+    fun requestPlanKeepsZoomStableWhenViewportCrossesTileBoundary() {
+        val grid =
+            TileGrid(
+                originX = 0.0,
+                originY = 1024.0,
+                worldWidth = 1024.0,
+                nTilesX0 = 1,
+                nTilesY0 = 1,
+                tileSize = 256,
+            )
+
+        val aligned =
+            grid.requestPlan(
+                minX = 0.0,
+                maxX = 511.0,
+                minY = 513.0,
+                maxY = 1024.0,
+                preferredZoom = 2,
+                maxVisibleTiles = 4,
+                prefetchMargin = 0,
+            )
+        val shiftedAcrossTileBoundary =
+            grid.requestPlan(
+                minX = 1.0,
+                maxX = 512.0,
+                minY = 512.0,
+                maxY = 1023.0,
+                preferredZoom = 2,
+                maxVisibleTiles = 4,
+                prefetchMargin = 0,
+            )
+
+        assertEquals(2, aligned.zoom)
+        assertEquals(aligned.zoom, shiftedAcrossTileBoundary.zoom)
     }
 
     @Test
