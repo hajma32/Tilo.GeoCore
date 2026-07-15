@@ -11,6 +11,6 @@ interface Transformation<S : Projection, T : Projection> {
     val target: T
 
     fun sourceToTarget(point: Point): Point
+
     fun targetToSource(point: Point): Point
 }
-

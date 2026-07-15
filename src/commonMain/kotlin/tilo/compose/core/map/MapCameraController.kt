@@ -10,5 +10,8 @@ interface MapCameraController {
 
     fun zoomOut(step: Double)
 
-    fun zoomBy(delta: Double, focus: Point?)
+    fun zoomBy(
+        delta: Double,
+        focus: Point?,
+    )
 }

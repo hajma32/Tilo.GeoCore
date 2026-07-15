@@ -3,6 +3,7 @@ package tilo.compose.core.layers.vector
 import tilo.compose.core.feature.Feature
 import tilo.compose.core.feature.FeatureLayerStyle
 import tilo.compose.core.feature.source.FeatureListSource
+import tilo.compose.core.layers.Attribution
 import tilo.compose.core.projection.Projection
 
 /**
@@ -22,6 +23,7 @@ class FeatureLayer(
     override val minZoom: Double? = null,
     override val maxZoom: Double? = null,
     override val projection: Projection? = null,
+    override val attributions: List<Attribution> = emptyList(),
     features: List<Feature>,
     override val renderStrategy: VectorRenderStrategy = VectorRenderStrategy.Immediate,
     override val style: FeatureLayerStyle = FeatureLayerStyle(),

@@ -2,15 +2,14 @@ package tilo.compose.core.geometry
 
 import tilo.spatial.SpatialRect
 
-fun Geometry.bounds(): BoundingBox =
-    BoundingBox.fromPoints(pointsForBounds())
+fun Geometry.bounds(): BoundingBox = BoundingBox.fromPoints(pointsForBounds())
 
 fun BoundingBox.toSpatialRect(): SpatialRect =
     SpatialRect(
         minX = minX,
         minY = minY,
         maxX = maxX,
-        maxY = maxY
+        maxY = maxY,
     )
 
 fun SpatialRect.toBoundingBox(): BoundingBox =
@@ -18,7 +17,7 @@ fun SpatialRect.toBoundingBox(): BoundingBox =
         minX = minX,
         maxX = maxX,
         minY = minY,
-        maxY = maxY
+        maxY = maxY,
     )
 
 private fun Geometry.pointsForBounds(): List<Point> =

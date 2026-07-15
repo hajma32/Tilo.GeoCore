@@ -9,7 +9,9 @@ sealed interface GeometryStyle
  * pixels. Platform renderers convert them to device pixels using their density.
  */
 @JvmInline
-value class ColorValue(val argb: ULong) {
+value class ColorValue(
+    val argb: ULong,
+) {
     companion object {
         val Transparent = ColorValue(0x00000000u)
         val Black = ColorValue(0xFF111827u)
@@ -72,45 +74,44 @@ enum class PointShape {
     Cross,
 }
 
-data class PointIcon(
-    val id: String,
-)
-
 data class PointStyle(
     val shape: PointShape = PointShape.Circle,
     val size: Double = 14.0,
     val fill: FillStyle? = FillStyle(color = ColorValue.Blue),
     val stroke: StrokeStyle? = StrokeStyle(color = ColorValue.White, width = 2.5),
-    val icon: PointIcon? = null,
 ) : GeometryStyle
 
 data class LineStyle(
-    val casing: StrokeStyle? = StrokeStyle(
-        color = ColorValue.White,
-        width = 6.0,
-        lineCap = LineCap.Round,
-        lineJoin = LineJoin.Round,
-    ),
-    val stroke: StrokeStyle = StrokeStyle(
-        color = ColorValue.Blue,
-        width = 3.0,
-        lineCap = LineCap.Round,
-        lineJoin = LineJoin.Round,
-    ),
+    val casing: StrokeStyle? =
+        StrokeStyle(
+            color = ColorValue.White,
+            width = 6.0,
+            lineCap = LineCap.Round,
+            lineJoin = LineJoin.Round,
+        ),
+    val stroke: StrokeStyle =
+        StrokeStyle(
+            color = ColorValue.Blue,
+            width = 3.0,
+            lineCap = LineCap.Round,
+            lineJoin = LineJoin.Round,
+        ),
 ) : GeometryStyle
 
 data class PolygonStyle(
     val fill: FillStyle? = FillStyle(color = ColorValue(0x331E88E5u)),
-    val casing: StrokeStyle? = StrokeStyle(
-        color = ColorValue.White,
-        width = 5.0,
-        lineJoin = LineJoin.Round,
-    ),
-    val stroke: StrokeStyle? = StrokeStyle(
-        color = ColorValue.Blue,
-        width = 2.0,
-        lineJoin = LineJoin.Round,
-    ),
+    val casing: StrokeStyle? =
+        StrokeStyle(
+            color = ColorValue.White,
+            width = 5.0,
+            lineJoin = LineJoin.Round,
+        ),
+    val stroke: StrokeStyle? =
+        StrokeStyle(
+            color = ColorValue.Blue,
+            width = 2.0,
+            lineJoin = LineJoin.Round,
+        ),
 ) : GeometryStyle
 
 enum class LabelFontWeight {
@@ -155,9 +156,3 @@ data class FeatureLayerStyle(
     val selectedPolygon: PolygonStyle? = null,
     val selectedLabel: LabelStyle? = null,
 )
-
-data class BaseStyle(
-    val strokeColor: Long? = null,
-    val fillColor: Long? = null,
-    val strokeWidth: Double? = null
-) : GeometryStyle

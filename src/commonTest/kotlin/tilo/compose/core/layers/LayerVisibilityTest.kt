@@ -1,14 +1,13 @@
 package tilo.compose.core.layers
 
-import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import tilo.compose.core.feature.Feature
 import tilo.compose.core.geometry.Point
 import tilo.compose.core.layers.vector.FeatureLayer
+import kotlin.test.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class LayerVisibilityTest {
-
     @Test
     fun layerIsVisibleInsideInclusiveZoomRange() {
         val layer = featureLayer(minZoom = 10.0, maxZoom = 14.0)

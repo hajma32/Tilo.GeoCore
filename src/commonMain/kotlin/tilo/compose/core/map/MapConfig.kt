@@ -20,9 +20,8 @@ data class MapConfig(
     val transformer: CrsTransformer
         get() = CrsTransformer(transformationRegistry)
 
-    fun withTransformation(transformation: Transformation<Projection, Projection>): MapConfig {
-        return copy(transformationRegistry = transformationRegistry.withTransformation(transformation))
-    }
+    fun withTransformation(transformation: Transformation<Projection, Projection>): MapConfig =
+        copy(transformationRegistry = transformationRegistry.withTransformation(transformation))
 
     companion object {
         val Default = MapConfig()

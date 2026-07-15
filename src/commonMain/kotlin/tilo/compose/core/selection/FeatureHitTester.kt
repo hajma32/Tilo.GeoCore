@@ -1,6 +1,5 @@
 package tilo.compose.core.selection
 
-import tilo.compose.core.feature.BaseStyle
 import tilo.compose.core.feature.Feature
 import tilo.compose.core.feature.FeatureLayerStyle
 import tilo.compose.core.feature.GeometryStyle
@@ -51,7 +50,7 @@ class FeatureHitTester(
                                 feature = item.feature,
                                 worldPoint = worldPoint,
                                 screenPoint = screenPoint,
-                            )
+                            ),
                         )
                     }
                 }
@@ -66,11 +65,21 @@ class FeatureHitTester(
     ): Boolean =
         when (this) {
             is Point -> screenPoint.distanceTo(worldToScreen(this)) <= feature.pointTolerance(layerStyle)
-            is MultiPoint -> points.any { point -> screenPoint.distanceTo(worldToScreen(point)) <= feature.pointTolerance(layerStyle) }
+            is MultiPoint ->
+                points.any { point ->
+                    screenPoint.distanceTo(worldToScreen(point)) <=
+                        feature.pointTolerance(layerStyle)
+                }
             is LineString -> hitLine(points, screenPoint, worldToScreen, feature.lineTolerance(layerStyle))
-            is MultiLineString -> lines.any { line -> hitLine(line.points, screenPoint, worldToScreen, feature.lineTolerance(layerStyle)) }
+            is MultiLineString ->
+                lines.any { line ->
+                    hitLine(line.points, screenPoint, worldToScreen, feature.lineTolerance(layerStyle))
+                }
             is Polygon -> hitPolygon(this, screenPoint, worldToScreen, feature.lineTolerance(layerStyle))
-            is MultiPolygon -> polygons.any { polygon -> hitPolygon(polygon, screenPoint, worldToScreen, feature.lineTolerance(layerStyle)) }
+            is MultiPolygon ->
+                polygons.any { polygon ->
+                    hitPolygon(polygon, screenPoint, worldToScreen, feature.lineTolerance(layerStyle))
+                }
         }
 
     private fun hitLine(
@@ -95,28 +104,30 @@ class FeatureHitTester(
 
     private fun Feature.pointTolerance(layerStyle: FeatureLayerStyle): Double {
         val style = style ?: layerStyle.geometryStyleFor(geometry)
-        val visualRadius = when (style) {
-            is PointStyle -> (style.size / 2.0 + (style.stroke?.width ?: 0.0)).toScreenPixels()
-            is BaseStyle -> ((style.strokeWidth ?: 0.0) / 2.0).toScreenPixels()
-            else -> 0.0
-        }
+        val visualRadius =
+            when (style) {
+                is PointStyle -> (style.size / 2.0 + (style.stroke?.width ?: 0.0)).toScreenPixels()
+                else -> 0.0
+            }
         return max(toleranceDip.toScreenPixels(), visualRadius + TOUCH_PADDING_DIP.toScreenPixels())
     }
 
     private fun Feature.lineTolerance(layerStyle: FeatureLayerStyle): Double {
         val style = style ?: layerStyle.geometryStyleFor(geometry)
-        val strokeWidth = when (style) {
-            is LineStyle -> max(
-                style.stroke.width.toScreenPixels(),
-                (style.casing?.width ?: 0.0).toScreenPixels(),
-            )
-            is PolygonStyle -> max(
-                (style.stroke?.width ?: 0.0).toScreenPixels(),
-                (style.casing?.width ?: 0.0).toScreenPixels(),
-            )
-            is BaseStyle -> (style.strokeWidth ?: 0.0).toScreenPixels()
-            else -> 0.0
-        }
+        val strokeWidth =
+            when (style) {
+                is LineStyle ->
+                    max(
+                        style.stroke.width.toScreenPixels(),
+                        (style.casing?.width ?: 0.0).toScreenPixels(),
+                    )
+                is PolygonStyle ->
+                    max(
+                        (style.stroke?.width ?: 0.0).toScreenPixels(),
+                        (style.casing?.width ?: 0.0).toScreenPixels(),
+                    )
+                else -> 0.0
+            }
         return max(toleranceDip.toScreenPixels(), strokeWidth / 2.0 + TOUCH_PADDING_DIP.toScreenPixels())
     }
 

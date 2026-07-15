@@ -1,11 +1,12 @@
 package tilo.compose.core.geometry
 
 /** Axis-aligned bounding box defined by its four corners. */
-data class BoundingBox(
+@ConsistentCopyVisibility
+data class BoundingBox private constructor(
     val topLeft: Point,
     val topRight: Point,
     val bottomLeft: Point,
-    val bottomRight: Point
+    val bottomRight: Point,
 ) {
     val minX: Double get() = topLeft.x
     val maxX: Double get() = topRight.x
@@ -13,12 +14,12 @@ data class BoundingBox(
     val maxY: Double get() = topLeft.y
 
     fun intersects(other: BoundingBox): Boolean =
-        maxX >= other.minX && other.maxX >= minX &&
-            maxY >= other.minY && other.maxY >= minY
+        maxX >= other.minX &&
+            other.maxX >= minX &&
+            maxY >= other.minY &&
+            other.maxY >= minY
 
-    fun contains(point: Point): Boolean {
-        return point.x in minX..maxX && point.y in minY..maxY
-    }
+    fun contains(point: Point): Boolean = point.x in minX..maxX && point.y in minY..maxY
 
     companion object {
         fun fromPoints(points: List<Point>): BoundingBox {
@@ -30,12 +31,23 @@ data class BoundingBox(
             return fromExtents(minX = minX, maxX = maxX, minY = minY, maxY = maxY)
         }
 
-        fun fromExtents(minX: Double, maxX: Double, minY: Double, maxY: Double): BoundingBox {
+        fun fromExtents(
+            minX: Double,
+            maxX: Double,
+            minY: Double,
+            maxY: Double,
+        ): BoundingBox {
+            require(minX.isFinite() && maxX.isFinite() && minY.isFinite() && maxY.isFinite()) {
+                "BoundingBox extents must be finite"
+            }
+            require(minX <= maxX && minY <= maxY) {
+                "BoundingBox minimum extents must not be greater than maximum extents"
+            }
             return BoundingBox(
                 topLeft = Point(minX, maxY),
                 topRight = Point(maxX, maxY),
                 bottomLeft = Point(minX, minY),
-                bottomRight = Point(maxX, minY)
+                bottomRight = Point(maxX, minY),
             )
         }
     }

@@ -7,6 +7,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TileGridTest {
+    /**
+     * Input: viewports with equal logical size but pixel ratios 1x and 3x.
+     * Expected output: both viewports select the same density-independent tile zoom.
+     */
     @Test
     fun zoomForViewportUsesDipSizeInsteadOfPhysicalPixels() {
         val grid = TileGrid()

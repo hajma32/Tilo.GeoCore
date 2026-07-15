@@ -6,4 +6,3 @@ package tilo.compose.core.projection
 object Epsg4326Projection : Projection {
     override val id: String = "EPSG:4326"
 }
-

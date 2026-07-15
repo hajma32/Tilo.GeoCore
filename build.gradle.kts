@@ -1,10 +1,8 @@
 plugins {
     kotlin("multiplatform")
-    `maven-publish`
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.mavenPublish)
 }
-
-group = "eu.tilo"
-version = "0.1.0-SNAPSHOT"
 
 kotlin {
     jvm()
@@ -14,7 +12,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":spatial-index"))
+                api(project(":spatial-index"))
             }
         }
         val commonTest by getting {

@@ -4,10 +4,12 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
-fun Point.distanceTo(other: Point): Double =
-    hypot(x - other.x, y - other.y)
+fun Point.distanceTo(other: Point): Double = hypot(x - other.x, y - other.y)
 
-fun Point.distanceToSegment(segmentStart: Point, segmentEnd: Point): Double {
+fun Point.distanceToSegment(
+    segmentStart: Point,
+    segmentEnd: Point,
+): Double {
     val dx = segmentEnd.x - segmentStart.x
     val dy = segmentEnd.y - segmentStart.y
     if (dx == 0.0 && dy == 0.0) {
@@ -20,7 +22,7 @@ fun Point.distanceToSegment(segmentStart: Point, segmentEnd: Point): Double {
         Point(
             x = segmentStart.x + clamped * dx,
             y = segmentStart.y + clamped * dy,
-        )
+        ),
     )
 }
 
@@ -35,8 +37,9 @@ fun Point.isInsideRing(ring: List<Point>): Boolean {
     var inside = false
     var previous = ring.last()
     ring.forEach { current ->
-        val intersects = ((current.y > y) != (previous.y > y)) &&
-            (x < (previous.x - current.x) * (y - current.y) / (previous.y - current.y) + current.x)
+        val intersects =
+            ((current.y > y) != (previous.y > y)) &&
+                (x < (previous.x - current.x) * (y - current.y) / (previous.y - current.y) + current.x)
         if (intersects) inside = !inside
         previous = current
     }

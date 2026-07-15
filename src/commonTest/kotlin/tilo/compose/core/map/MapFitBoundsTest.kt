@@ -1,20 +1,20 @@
 package tilo.compose.core.map
 
+import tilo.compose.core.geometry.BoundingBox
+import tilo.compose.core.geometry.Point
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
-import tilo.compose.core.geometry.BoundingBox
-import tilo.compose.core.geometry.Point
 
 class MapFitBoundsTest {
-
     @Test
     fun fitBoundsCentersBoundsAndKeepsCornersInsidePadding() {
-        val map = Map(
-            viewport = Viewport(width = 1_000, height = 600, pixelRatio = 2.0),
-            config = MapConfig(minZoom = 0.0, maxZoom = 20.0),
-        )
+        val map =
+            MapState(
+                viewport = Viewport(width = 1_000, height = 600, pixelRatio = 2.0),
+                config = MapConfig(minZoom = 0.0, maxZoom = 20.0),
+            )
         val bounds = BoundingBox.fromExtents(minX = -100.0, maxX = 100.0, minY = -50.0, maxY = 50.0)
 
         map.fitBounds(bounds, paddingPx = 40.0)
@@ -30,10 +30,11 @@ class MapFitBoundsTest {
 
     @Test
     fun fitBoundsClampsToConfiguredZoomRange() {
-        val map = Map(
-            viewport = Viewport(width = 1_000, height = 600),
-            config = MapConfig(minZoom = 3.0, maxZoom = 8.0),
-        )
+        val map =
+            MapState(
+                viewport = Viewport(width = 1_000, height = 600),
+                config = MapConfig(minZoom = 3.0, maxZoom = 8.0),
+            )
 
         map.fitBounds(BoundingBox.fromExtents(-10_000.0, 10_000.0, -10_000.0, 10_000.0))
 
@@ -42,7 +43,7 @@ class MapFitBoundsTest {
 
     @Test
     fun fitBoundsRejectsInvalidOrUnusablePadding() {
-        val map = Map(viewport = Viewport(width = 300, height = 200))
+        val map = MapState(viewport = Viewport(width = 300, height = 200))
         val bounds = BoundingBox.fromExtents(-10.0, 10.0, -10.0, 10.0)
 
         assertFailsWith<IllegalArgumentException> { map.fitBounds(bounds, paddingPx = Double.NaN) }
@@ -51,7 +52,7 @@ class MapFitBoundsTest {
 
     @Test
     fun fitBoundsRejectsNonFiniteOrReversedBounds() {
-        val map = Map(viewport = Viewport(width = 300, height = 200))
+        val map = MapState(viewport = Viewport(width = 300, height = 200))
 
         assertFailsWith<IllegalArgumentException> {
             map.fitBounds(BoundingBox.fromExtents(Double.NaN, 10.0, -10.0, 10.0))

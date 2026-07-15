@@ -5,10 +5,7 @@ data class TileMatrixBounds(
     val minX: Int,
     val maxX: Int,
     val minY: Int,
-    val maxY: Int
+    val maxY: Int,
 ) {
-    fun contains(coordinate: TileCoordinate): Boolean {
-        return coordinate.x in minX..maxX && coordinate.y in minY..maxY
-    }
+    fun contains(coordinate: TileCoordinate): Boolean = coordinate.x in minX..maxX && coordinate.y in minY..maxY
 }
-
