@@ -106,7 +106,9 @@ class FeatureHitTester(
         val style = style ?: layerStyle.geometryStyleFor(geometry)
         val visualRadius =
             when (style) {
-                is PointStyle -> (style.size / 2.0 + (style.stroke?.width ?: 0.0)).toScreenPixels()
+                is PointStyle ->
+                    (max(style.size, style.icon?.size ?: 0.0) / 2.0 + (style.stroke?.width ?: 0.0))
+                        .toScreenPixels()
                 else -> 0.0
             }
         return max(toleranceDip.toScreenPixels(), visualRadius + TOUCH_PADDING_DIP.toScreenPixels())

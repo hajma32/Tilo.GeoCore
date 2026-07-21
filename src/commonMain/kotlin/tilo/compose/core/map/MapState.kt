@@ -10,12 +10,33 @@ import kotlin.math.log2
  * Mutable engine-level map state, including center, zoom, projection, and viewport.
  */
 class MapState(
-    var center: Point = Point(0.0, 0.0),
-    var zoom: Double = 0.0,
+    center: Point = Point(0.0, 0.0),
+    zoom: Double = 0.0,
     val projection: Projection = IdentityProjection,
     val config: MapConfig = MapConfig.Default,
-    var viewport: Viewport = Viewport.Empty,
+    viewport: Viewport = Viewport.Empty,
 ) {
+    var center: Point = center
+        set(value) {
+            field = constrainCenter(value)
+        }
+
+    var zoom: Double = zoom.coerceIn(config.minZoom, config.maxZoom)
+        set(value) {
+            field = value.coerceIn(config.minZoom, config.maxZoom)
+            center = center
+        }
+
+    var viewport: Viewport = viewport
+        set(value) {
+            field = value
+            center = center
+        }
+
+    init {
+        this.center = center
+    }
+
     fun panBy(
         dx: Double,
         dy: Double,
@@ -39,9 +60,14 @@ class MapState(
             return
         }
         val worldBefore = viewport.screenToWorld(focus, center, zoom, projection.worldUnitsPerMapUnit)
+        val worldAfter = viewport.screenToWorld(focus, center, newZoom, projection.worldUnitsPerMapUnit)
+        val targetCenter =
+            Point(
+                center.x + (worldBefore.x - worldAfter.x),
+                center.y + (worldBefore.y - worldAfter.y),
+            )
         zoom = newZoom
-        val worldAfter = viewport.screenToWorld(focus, center, zoom, projection.worldUnitsPerMapUnit)
-        center = Point(center.x + (worldBefore.x - worldAfter.x), center.y + (worldBefore.y - worldAfter.y))
+        center = targetCenter
     }
 
     /**
@@ -88,12 +114,13 @@ class MapState(
                 config.maxZoom
             }
 
-        center =
+        val targetCenter =
             Point(
                 x = (bounds.minX + bounds.maxX) / 2.0,
                 y = (bounds.minY + bounds.maxY) / 2.0,
             )
         zoom = targetZoom.coerceIn(config.minZoom, config.maxZoom)
+        center = targetCenter
     }
 
     fun transformSourceToTarget(
@@ -113,4 +140,37 @@ class MapState(
 
     fun screenToWorld(screen: Point): Point =
         viewport.screenToWorld(screen, center, zoom, projection.worldUnitsPerMapUnit)
+
+    private fun constrainCenter(requested: Point): Point {
+        val bounds = config.cameraBounds ?: return requested
+        val topLeft = viewport.screenToWorld(Point(0.0, 0.0), requested, zoom, projection.worldUnitsPerMapUnit)
+        val bottomRight =
+            viewport.screenToWorld(
+                Point(viewport.width.toDouble(), viewport.height.toDouble()),
+                requested,
+                zoom,
+                projection.worldUnitsPerMapUnit,
+            )
+        val halfWidth = (bottomRight.x - topLeft.x) / 2.0
+        val halfHeight = (topLeft.y - bottomRight.y) / 2.0
+
+        return Point(
+            x = requested.x.constrainAxis(bounds.minX, bounds.maxX, halfWidth),
+            y = requested.y.constrainAxis(bounds.minY, bounds.maxY, halfHeight),
+        )
+    }
+
+    private fun Double.constrainAxis(
+        minimum: Double,
+        maximum: Double,
+        viewportHalfExtent: Double,
+    ): Double {
+        val minimumCenter = minimum + viewportHalfExtent
+        val maximumCenter = maximum - viewportHalfExtent
+        return if (minimumCenter <= maximumCenter) {
+            coerceIn(minimumCenter, maximumCenter)
+        } else {
+            (minimum + maximum) / 2.0
+        }
+    }
 }

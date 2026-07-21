@@ -79,6 +79,7 @@ data class PointStyle(
     val size: Double = 14.0,
     val fill: FillStyle? = FillStyle(color = ColorValue.Blue),
     val stroke: StrokeStyle? = StrokeStyle(color = ColorValue.White, width = 2.5),
+    val icon: PointIconStyle? = null,
 ) : GeometryStyle
 
 data class LineStyle(
