@@ -121,12 +121,12 @@ class FeatureHitTester(
                 is LineStyle ->
                     max(
                         style.stroke.width.toScreenPixels(),
-                        (style.casing?.width ?: 0.0).toScreenPixels(),
+                        (style.casing?.outerWidth(style.stroke.width) ?: 0.0).toScreenPixels(),
                     )
                 is PolygonStyle ->
                     max(
                         (style.stroke?.width ?: 0.0).toScreenPixels(),
-                        (style.casing?.width ?: 0.0).toScreenPixels(),
+                        (style.casing?.outerWidth(style.stroke?.width ?: 0.0) ?: 0.0).toScreenPixels(),
                     )
                 else -> 0.0
             }
