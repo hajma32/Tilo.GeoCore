@@ -1,7 +1,10 @@
 package tilo.compose.core.map
 
 import tilo.compose.core.geometry.Point
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.pow
+import kotlin.math.sin
 
 /**
  * Represents the current viewport of the map.
@@ -29,11 +32,15 @@ data class Viewport(
         center: Point,
         zoom: Double,
         worldUnitsPerMapUnit: Double = 1.0,
+        bearing: Double = 0.0,
     ): Point {
         val scale = 2.0.pow(zoom) / worldUnitsPerMapUnit
+        val radians = bearing * PI / 180.0
+        val x = (world.x - center.x) * scale
+        val y = (center.y - world.y) * scale
         return Point(
-            x = ((world.x - center.x) * scale + dipWidth / 2.0) * pixelRatio,
-            y = ((center.y - world.y) * scale + dipHeight / 2.0) * pixelRatio,
+            x = (x * cos(radians) + y * sin(radians) + dipWidth / 2.0) * pixelRatio,
+            y = (-x * sin(radians) + y * cos(radians) + dipHeight / 2.0) * pixelRatio,
         )
     }
 
@@ -42,11 +49,15 @@ data class Viewport(
         center: Point,
         zoom: Double,
         worldUnitsPerMapUnit: Double = 1.0,
+        bearing: Double = 0.0,
     ): Point {
         val scale = 2.0.pow(zoom) / worldUnitsPerMapUnit
+        val radians = bearing * PI / 180.0
+        val screenX = screen.x / pixelRatio - dipWidth / 2.0
+        val screenY = screen.y / pixelRatio - dipHeight / 2.0
         return Point(
-            x = (screen.x / pixelRatio - dipWidth / 2.0) / scale + center.x,
-            y = center.y - (screen.y / pixelRatio - dipHeight / 2.0) / scale,
+            x = (screenX * cos(radians) - screenY * sin(radians)) / scale + center.x,
+            y = center.y - (screenX * sin(radians) + screenY * cos(radians)) / scale,
         )
     }
 }

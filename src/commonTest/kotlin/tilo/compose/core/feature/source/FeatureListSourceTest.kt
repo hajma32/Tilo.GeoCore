@@ -52,4 +52,19 @@ class FeatureListSourceTest {
 
         assertEquals(listOf("visible"), features.map { it.key })
     }
+
+    @Test
+    fun rotatedViewportQueriesItsFourCornerEnvelope() {
+        val cornerFeature = Feature(key = "rotated-corner", geometry = Point(65.0, 0.0))
+        val source = FeatureListSource(listOf(cornerFeature))
+
+        val unrotated = source.getFeatures(MapState(viewport = Viewport(width = 100, height = 100)))
+        val rotated =
+            source.getFeatures(
+                MapState(bearing = 45.0, viewport = Viewport(width = 100, height = 100)),
+            )
+
+        assertEquals(emptyList(), unrotated)
+        assertEquals(listOf(cornerFeature), rotated)
+    }
 }

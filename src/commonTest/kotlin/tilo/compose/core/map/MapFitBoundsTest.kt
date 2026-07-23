@@ -42,6 +42,26 @@ class MapFitBoundsTest {
     }
 
     @Test
+    fun fitBoundsResetsBearingToNorth() {
+        val map = MapState(bearing = 127.0, viewport = Viewport(width = 300, height = 200))
+
+        map.fitBounds(BoundingBox.fromExtents(-20.0, 20.0, -10.0, 10.0), paddingPx = 10.0)
+
+        assertEquals(0.0, map.bearing)
+    }
+
+    @Test
+    fun rejectedFitBoundsDoesNotResetBearing() {
+        val map = MapState(bearing = 127.0, viewport = Viewport(width = 300, height = 200))
+
+        assertFailsWith<IllegalArgumentException> {
+            map.fitBounds(BoundingBox.fromExtents(-20.0, 20.0, -10.0, 10.0), paddingPx = 100.0)
+        }
+
+        assertEquals(127.0, map.bearing)
+    }
+
+    @Test
     fun fitBoundsRejectsInvalidOrUnusablePadding() {
         val map = MapState(viewport = Viewport(width = 300, height = 200))
         val bounds = BoundingBox.fromExtents(-10.0, 10.0, -10.0, 10.0)

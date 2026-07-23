@@ -2,7 +2,6 @@ package tilo.compose.core.feature.source
 
 import tilo.compose.core.feature.Feature
 import tilo.compose.core.geometry.BoundingBox
-import tilo.compose.core.geometry.Point
 import tilo.compose.core.geometry.bounds
 import tilo.compose.core.map.MapState
 import tilo.compose.core.projection.Projection
@@ -64,22 +63,16 @@ class FeatureListSource(
     }
 
     private fun visibleBounds(map: MapState): BoundingBox {
-        val topLeft = map.screenToWorld(Point(0.0, 0.0))
-        val bottomRight = map.screenToWorld(Point(map.viewport.width.toDouble(), map.viewport.height.toDouble()))
+        val visible = map.viewportBounds()
 
-        val minX = minOf(topLeft.x, bottomRight.x)
-        val maxX = maxOf(topLeft.x, bottomRight.x)
-        val minY = minOf(topLeft.y, bottomRight.y)
-        val maxY = maxOf(topLeft.y, bottomRight.y)
-
-        val padX = (maxX - minX) * VIEWPORT_QUERY_PADDING
-        val padY = (maxY - minY) * VIEWPORT_QUERY_PADDING
+        val padX = (visible.maxX - visible.minX) * VIEWPORT_QUERY_PADDING
+        val padY = (visible.maxY - visible.minY) * VIEWPORT_QUERY_PADDING
 
         return BoundingBox.fromExtents(
-            minX = minX - padX,
-            maxX = maxX + padX,
-            minY = minY - padY,
-            maxY = maxY + padY,
+            minX = visible.minX - padX,
+            maxX = visible.maxX + padX,
+            minY = visible.minY - padY,
+            maxY = visible.maxY + padY,
         )
     }
 
