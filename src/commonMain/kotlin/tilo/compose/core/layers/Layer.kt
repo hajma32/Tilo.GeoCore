@@ -35,6 +35,10 @@ interface Layer {
     val visible: Boolean
         get() = true
 
+    /** Opacity applied when compositing this layer, from fully transparent `0.0` to opaque `1.0`. */
+    val opacity: Double
+        get() = 1.0
+
     /** Inclusive lower zoom limit for this layer, or `null` for no limit. */
     val minZoom: Double?
         get() = null

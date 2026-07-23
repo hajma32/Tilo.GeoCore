@@ -11,6 +11,7 @@ import tilo.compose.core.projection.Projection
  *
  * @param id Unique layer identifier.
  * @param zIndex Draw order relative to other layers (lower = drawn first).
+ * @param opacity Final compositing opacity in the inclusive range `0.0..1.0`.
  * @param projection Source CRS of the provided features, or null if features are already in the
  *   map CRS.
  * @param features Features to display.
@@ -27,8 +28,10 @@ class FeatureLayer(
     features: List<Feature>,
     override val renderStrategy: VectorRenderStrategy = VectorRenderStrategy.Immediate,
     override val style: FeatureLayerStyle = FeatureLayerStyle(),
+    override val opacity: Double = 1.0,
 ) : VectorLayer {
     init {
+        require(opacity in 0.0..1.0) { "opacity must be between 0.0 and 1.0" }
         require(minZoom == null || maxZoom == null || minZoom <= maxZoom) {
             "minZoom must not be greater than maxZoom"
         }

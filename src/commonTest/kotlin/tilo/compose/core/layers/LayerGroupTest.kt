@@ -27,6 +27,25 @@ class LayerGroupTest {
         }
     }
 
+    @Test
+    fun opacityOutsideUnitRangeIsRejected() {
+        assertFailsWith<IllegalArgumentException> {
+            LayerGroup(id = "group", children = emptyList(), opacity = -0.1)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            LayerGroup(id = "group", children = emptyList(), opacity = 1.1)
+        }
+    }
+
+    @Test
+    fun opacityDoesNotChangeExistingPositionalArguments() {
+        val group = LayerGroup("group", emptyList(), 3, true, 0.5, 2.0, emptyList())
+
+        assertEquals(0.5, group.minZoom)
+        assertEquals(2.0, group.maxZoom)
+        assertEquals(1.0, group.opacity)
+    }
+
     private fun testLayer(id: String): Layer =
         object : Layer {
             override val id = id
