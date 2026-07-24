@@ -16,6 +16,8 @@ class FeatureListSource(
     private val projection: Projection? = null,
     maxEntries: Int = 9,
 ) : FeatureSource {
+    override val supportsBufferedQueries: Boolean = true
+
     private val features = features.toList()
 
     override val version: Long = this.features.hashCode().toLong()

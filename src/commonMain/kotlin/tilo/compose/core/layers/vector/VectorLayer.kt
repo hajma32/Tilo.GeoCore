@@ -33,6 +33,23 @@ interface VectorLayer : Layer {
 sealed interface VectorRenderStrategy {
     data object Immediate : VectorRenderStrategy
 
+    /**
+     * Draw vectors immediately after simplifying lines and polygon rings with Douglas-Peucker.
+     *
+     * [tolerancePx] is the maximum screen-space deviation. The renderer converts it to map units
+     * at the current zoom, so lower zoom levels simplify more aggressively while higher zooms
+     * retain progressively more source detail.
+     */
+    data class ImmediateLod(
+        val tolerancePx: Double = 1.5,
+    ) : VectorRenderStrategy {
+        init {
+            require(tolerancePx.isFinite() && tolerancePx > 0.0) {
+                "tolerancePx must be finite and positive"
+            }
+        }
+    }
+
     data class CachedBitmap(
         val scale: Double = 1.0,
         val paddingPx: Int = 128,

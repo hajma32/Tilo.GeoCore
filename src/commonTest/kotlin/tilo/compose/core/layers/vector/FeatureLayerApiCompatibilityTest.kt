@@ -2,6 +2,7 @@ package tilo.compose.core.layers.vector
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class FeatureLayerApiCompatibilityTest {
     @Test
@@ -22,5 +23,11 @@ class FeatureLayerApiCompatibilityTest {
         assertEquals(0.5, layer.minZoom)
         assertEquals(2.0, layer.maxZoom)
         assertEquals(1.0, layer.opacity)
+    }
+
+    @Test
+    fun immediateLodRequiresPositiveFiniteTolerance() {
+        assertFailsWith<IllegalArgumentException> { VectorRenderStrategy.ImmediateLod(0.0) }
+        assertFailsWith<IllegalArgumentException> { VectorRenderStrategy.ImmediateLod(Double.NaN) }
     }
 }
